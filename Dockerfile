@@ -1,13 +1,13 @@
-FROM python3.10-slim-buster
+FROM python:3.10-slim-buster
 
-WORKDIR /app
+WORKDIR /
 
 COPY requirements.txt requirements.txt
 
-RUN pip intall --upgrade pip && pip install -r -requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 5050
+EXPOSE 5000
 
-ENTRYPOINT ["python", "run:app", "--host", "0.0.0.0", "-port", "5050"]
+ENTRYPOINT ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]
