@@ -11,7 +11,7 @@ books = [
 ]
 
 @book_router.get('/{id}')
-def get_book(response:Response, id:int):
+async def get_book(response:Response, id:int):
     res = [book for book in books if book['id'] == id]
     if res:
         return res[0]
@@ -25,13 +25,13 @@ async def get_all_book():
     return books_list
 
 @book_router.post('/')
-def add_book(response:Response, book : Book):
+async def add_book(response:Response, book : Book):
     books.append(book.model_dump())
     response.status_code = 201
     return None
 
 @book_router.delete('/{id}')
-def delete_book(response:Response, id:int):
+async def delete_book(response:Response, id:int):
     for b in books:
         if b['id'] == id:
             books.remove(b)
