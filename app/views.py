@@ -14,6 +14,7 @@ books = [
     {'id':3,'title':'Book 3', 'author':'Author 3', 'text':'Text 3'},
     {'id':4,'title':'Book 4', 'author':'Author 4', 'text':'Text 4'}
 ]
+last_id = 4
 
 @book_bp.route('/<int:id>', methods=['GET'])
 def get_book(id):
@@ -35,8 +36,11 @@ def get_all_book():
 def add_book():
     data = request.json
     book_schema = BookSchema()
+    global last_id
     try:
         book = book_schema.load(data)
+        last_id += 1
+        book['id'] = last_id
         books.append(book)
     except ValidationError:
         abort(400)
@@ -48,8 +52,7 @@ def delete_book(id):
     for b in books:
         if b['id'] == id:
             books.remove(b)
-            break
-    else:
-        abort(404)
+            return '', 204
 
-    return '', 204
+    abort(404)
+
