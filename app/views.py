@@ -22,15 +22,23 @@ def get_book(book_id):
 
 @book_bp.route('/', methods=['GET'])
 def get_all_book():
-    if 'limit' in request.args and 'offset' in request.args:
+    if 'limit' in request.args :
         limit = int(request.args['limit'])
-        offset = int(request.args['offset'])
-        books = db.session.query(Book).limit(limit).offset(offset).all()
+    else:
+        limit = 10
+
+    if 'cursor' in request.args:
+        cursor = request.args['cursor']
+        books = (db.session.query(Book).filter(Book.id > cursor).limit(limit).all())
     else:
         books = db.session.query(Book).all()
 
+    if not books:
+        abort(404)
+    cursor = books[-1].id
+
     book_schema = BookSchema()
-    res = [book_schema.dump(book) for book in books]
+    res = {'books': [book_schema.dump(book) for book in books], 'cursor' : cursor}
     return jsonify(res)
 
 @book_bp.route('/', methods=['POST'])
