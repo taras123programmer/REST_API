@@ -22,7 +22,13 @@ def get_book(book_id):
 
 @book_bp.route('/', methods=['GET'])
 def get_all_book():
-    books = db.session.query(Book).all()
+    if 'limit' in request.args and 'offset' in request.args:
+        limit = int(request.args['limit'])
+        offset = int(request.args['offset'])
+        books = db.session.query(Book).limit(limit).offset(offset).all()
+    else:
+        books = db.session.query(Book).all()
+
     book_schema = BookSchema()
     res = [book_schema.dump(book) for book in books]
     return jsonify(res)
