@@ -34,7 +34,7 @@ async def add_book(response:Response, book : Book):
     return {'id' : str(res.inserted_id)}
 
 @book_router.delete('/{id}')
-async def delete_book(response:Response, id:int):
+async def delete_book(response:Response, id:str):
     try:
         object_id = ObjectId(id)
     except InvalidId:

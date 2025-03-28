@@ -3,7 +3,7 @@ from bson import ObjectId
 from typing import Optional
 
 class Book(BaseModel):
-    id : Optional[str] = None
+    _id : Optional[str] = None
     author : str
     title : str
     text : str
