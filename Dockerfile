@@ -1,6 +1,6 @@
 FROM python:3.10-slim-buster
 
-WORKDIR /
+WORKDIR /app
 
 COPY requirements.txt requirements.txt
 
@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5000
 
-ENTRYPOINT ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["uvicorn", "run:app", "--host", "0.0.0.0", "--port", "5000"]

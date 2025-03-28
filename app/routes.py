@@ -1,43 +1,48 @@
 from fastapi import *
 from app.models import Book
+from app.database import db
+from motor.motor_asyncio import AsyncIOMotorCollection
+from bson import ObjectId
+from bson.errors import InvalidId
 
 book_router = APIRouter(prefix='/book')
-
-books = [
-    {'id':1,'title':'Book 1', 'author':'Author 1', 'text':'Text 1'},
-    {'id':2,'title':'Book 2', 'author':'Author 2', 'text':'Text 2'},
-    {'id':3,'title':'Book 3', 'author':'Author 3', 'text':'Text 3'},
-    {'id':4,'title':'Book 4', 'author':'Author 4', 'text':'Text 4'}
-]
+books : AsyncIOMotorCollection = db['books']
 
 @book_router.get('/{id}')
-async def get_book(response:Response, id:int):
-    res = [book for book in books if book['id'] == id]
+async def get_book(id:str):
+    try:
+        object_id = ObjectId(id)
+    except InvalidId:
+        raise HTTPException(status_code=400)
+
+    res = await books.find_one({'_id' : object_id})
     if res:
-        return res[0]
+        res['id'] = str(res.pop('_id'))
+        return res
     else:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return None
+        raise HTTPException(status_code=404)
 
 @book_router.get('/')
 async def get_all_book():
-    books_list = [Book.model_validate(book) for book in books]
-    return books_list
+    res = await books.find().to_list(None)
+    return [{'id' : str(book.pop('_id')), **book} for book in res]
 
 @book_router.post('/')
 async def add_book(response:Response, book : Book):
-    books.append(book.model_dump())
+    res = await books.insert_one(book.model_dump())
     response.status_code = 201
-    return None
+    return {'id' : str(res.inserted_id)}
 
 @book_router.delete('/{id}')
 async def delete_book(response:Response, id:int):
-    for b in books:
-        if b['id'] == id:
-            books.remove(b)
-            response.status_code = 204
-            break
-    else:
-        response.status_code = 404
+    try:
+        object_id = ObjectId(id)
+    except InvalidId:
+        raise HTTPException(status_code=400)
 
-    return None
+    res = await books.delete_one({'_id' : object_id})
+    if res.deleted_count == 1:
+        response.status_code = 204
+        return None
+    else:
+        raise HTTPException(404)
