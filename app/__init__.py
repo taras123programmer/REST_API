@@ -4,6 +4,7 @@ from flask_sqlalchemy import  SQLAlchemy
 from sqlalchemy.orm import  DeclarativeBase
 from flask_migrate import  Migrate
 from flask_restful import Api
+from flasgger import  Swagger
 
 class Base(DeclarativeBase):
     pass
@@ -17,10 +18,13 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     api = Api(app)
+    swagger = Swagger(app)
+
     from app.models import Book
 
     with app.app_context():
-        from app.views import BookResource
-        api.add_resource(BookResource, "/book/", "/book/<int:book_id>")
+        from app.views import BookResource, BookByIdResource
+        api.add_resource(BookResource, "/book/")
+        api.add_resource(BookByIdResource, "/book/<int:book_id>")
 
     return app
