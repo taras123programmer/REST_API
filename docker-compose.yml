@@ -7,6 +7,8 @@ services:
       - "5000:5000"
     depends_on:
       - db
+    environment:
+      DB_HOST: db
 
   db:
     image: postgres:13
