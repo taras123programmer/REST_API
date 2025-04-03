@@ -14,10 +14,21 @@ async def get_book(id:int, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404)
 
-@book_router.get('/', response_model=list[BookSchema])
-async def get_all_book(db: Session = Depends(get_db)):
-    books = db.query(Book).all()
-    return books
+@book_router.get('/')
+async def get_all_book(db: Session = Depends(get_db), limit:int=None, cursor:int=None):
+    if not limit:
+        limit = 10
+    if cursor:
+        books = db.query(Book).filter(Book.id > cursor).limit(limit).all()
+    else:
+        books = db.query(Book).limit(limit).all()
+
+    if not books:
+        raise HTTPException(status_code=404)
+
+    cursor = books[-1].id
+
+    return {'books' : [BookSchema.from_orm(book) for book in books], 'cursor' : cursor}
 
 @book_router.post('/')
 async def add_book(response:Response, book : BookSchema, db: Session = Depends(get_db)):
