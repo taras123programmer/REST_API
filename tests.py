@@ -1,6 +1,6 @@
 import requests
 
-book = {'title':'Book 10', 'author':'Author 1', 'text':'Text 1'}
+book = {'title':'Book 10', 'author':'Author 10', 'text':'Text 10'}
 
 response = requests.get('http://localhost:5000/book/')
 print(response.json())
@@ -8,7 +8,6 @@ print(response.json())
 response = requests.post("http://localhost:5000/book/", json=book)
 print(response.status_code)
 print(response.text)
-
 
 id = input()
 print(id)
