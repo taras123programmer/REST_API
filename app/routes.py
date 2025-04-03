@@ -4,44 +4,40 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from database import get_db
 from sqlalchemy.orm import Session
+from schemas import BookSchema
 
 book_router = APIRouter(prefix='/book')
 
-@book_router.get('/{id}')
-async def get_book(id:str, db: Session = Depends(get_db)):
-    try:
-        object_id = ObjectId(id)
-    except InvalidId:
-        raise HTTPException(status_code=400)
-
-    res = await db.query(Book).filter_by(id = id)
-    if res:
-        res['id'] = str(res.pop('_id'))
-        return res
+@book_router.get('/{id}', response_model=BookSchema)
+async def get_book(id:int, db: Session = Depends(get_db)):
+    book = await db.query(Book).filter_by(id = id).first()
+    if book:
+        return book
     else:
         raise HTTPException(status_code=404)
 
-@book_router.get('/')
-async def get_all_book():
-    res = await books.find().to_list(None)
-    return [{'id' : str(book.pop('_id')), **book} for book in res]
+@book_router.get('/', response_model=[BookSchema])
+async def get_all_book(db: Session = Depends(get_db)):
+    books = await db.query(Book).all()
+    return books
 
-@book_router.post('/')
-async def add_book(response:Response, book : Book):
-    res = await books.insert_one(book.model_dump())
+@book_router.post('/', response_model=BookSchema)
+async def add_book(response:Response, book : Book, db: Session = Depends(get_db)):
+    book_model = Book(author=book.author, title=book.title, text=book.text)
+    db.add(book_model)
+    db.commit()
     response.status_code = 201
-    return {'id' : str(res.inserted_id)}
+    return book_model.id
 
 @book_router.delete('/{id}')
-async def delete_book(response:Response, id:str):
-    try:
-        object_id = ObjectId(id)
-    except InvalidId:
-        raise HTTPException(status_code=400)
-
-    res = await books.delete_one({'_id' : object_id})
-    if res.deleted_count == 1:
+async def get_book(response:Response, id:int, db: Session = Depends(get_db)):
+    book = await db.query(Book).filter_by(id = id).first()
+    if book:
+        db.delete(book)
+        db.commit()
         response.status_code = 204
         return None
     else:
         raise HTTPException(404)
+
+
