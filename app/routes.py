@@ -1,21 +1,20 @@
 from fastapi import *
 from app.models import Book
-from app.database import db
-from motor.motor_asyncio import AsyncIOMotorCollection
 from bson import ObjectId
 from bson.errors import InvalidId
+from database import get_db
+from sqlalchemy.orm import Session
 
 book_router = APIRouter(prefix='/book')
-books : AsyncIOMotorCollection = db['books']
 
 @book_router.get('/{id}')
-async def get_book(id:str):
+async def get_book(id:str, db: Session = Depends(get_db)):
     try:
         object_id = ObjectId(id)
     except InvalidId:
         raise HTTPException(status_code=400)
 
-    res = await books.find_one({'_id' : object_id})
+    res = await db.query(Book).filter_by(id = id)
     if res:
         res['id'] = str(res.pop('_id'))
         return res

@@ -1,12 +1,18 @@
-from pydantic import BaseModel
-from bson import ObjectId
-from typing import Optional
+from app.database import Base
+from sqlalchemy import  Column, Integer, String
 
-class Book(BaseModel):
-    _id : Optional[str] = None
-    author : str
-    title : str
-    text : str
+class Book(Base):
+    __tablename__ = 'users'
 
-    class Config:
-        json_encoders = {ObjectId: str}
+    id = Column(Integer, primary_key=True, index=True)
+    author = Column(String)
+    title = Column(String)
+    text = Column(String)
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, index=True)
+    password = Column(String)
