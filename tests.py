@@ -12,7 +12,6 @@ headers = {
 }
 
 response = requests.get('http://localhost:5000/book/', headers=headers)
-
 print(response.json())
 
 response = requests.post("http://localhost:5000/book/", json=book, headers=headers)
