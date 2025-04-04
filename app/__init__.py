@@ -1,5 +1,5 @@
 from fastapi import  FastAPI
-from app.routes import book_router
+from app.routes import book_router, token_router
 from app.config import Settings
 from app.database import Base, engine, get_db
 from app.models import Base
@@ -13,5 +13,6 @@ async def lifespan(app: FastAPI):
 def create_app():
     app = FastAPI(lifespan=lifespan)
     app.include_router(book_router)
+    app.include_router(token_router)
 
     return app

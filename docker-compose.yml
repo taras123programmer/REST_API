@@ -5,19 +5,21 @@ services:
     build: ./
     ports:
       - "5000:5000"
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017
     depends_on:
-      - mongodb
+      - db
+    environment:
+      DB_HOST: db
 
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
-    restart: always
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: booksdb
     ports:
-      - "27017:27017"
+      - "5432:5432"
     volumes:
-      - mongo_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  mongo_data:
+  postgres_data:
