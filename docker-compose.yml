@@ -1,14 +1,15 @@
 version: '3.8'
 
 services:
-#  web:
-#    build: ./
-#    ports:
-#      - "5000:5000"
-#    depends_on:
-#      - db
-#    environment:
-#      DB_HOST: db
+  web:
+    build: ./
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DB_HOST: db
 
   db:
     image: postgres:13

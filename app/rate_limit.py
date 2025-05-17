@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from redis.asyncio import Redis
 from starlette.requests import Request
 
-redis = Redis(host='localhost', port=6379, decode_responses=True)
+redis = Redis(host='book_cache', port=6379, decode_responses=True)
 
 RATE_LIMITS = {
     "anonymous" : (2, 60),
