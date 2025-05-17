@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  web:
-    build: ./
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    environment:
-      DB_HOST: db
+#  web:
+#    build: ./
+#    ports:
+#      - "5000:5000"
+#    depends_on:
+#      - db
+#    environment:
+#      DB_HOST: db
 
   db:
     image: postgres:13
@@ -20,6 +20,12 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: book_cache
+    ports:
+      - 6379:6379
 
 volumes:
   postgres_data:

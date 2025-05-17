@@ -1,4 +1,5 @@
 from fastapi import  FastAPI
+from redis.asyncio import Redis
 from app.routes import book_router, token_router
 from app.config import Settings
 from app.database import Base, engine, get_db

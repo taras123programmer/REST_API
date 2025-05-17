@@ -38,6 +38,14 @@ def login(db : Session, username : str, password : str):
     else:
         return False
 
+def register(db : Session, username : str, password : str):
+    if db.query(User).filter_by(username = username).first():
+        return False
+
+    user = User(username=username, password = hash_password(password))
+    db.add(user)
+    return True
+
 def hash_password(password: str):
     return pwd_context.hash(password)
 

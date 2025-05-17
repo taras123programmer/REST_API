@@ -3,11 +3,12 @@ from pydantic_settings import BaseSettings
 
 USERNAME = 'postgres'
 PASSWORD = 'password'
-DATABASE = 'BooksDB'
+DATABASE = 'booksdb'
+HOST = os.getenv("DB_HOST", "localhost")
 
 class Settings(BaseSettings):
 
-    SQLALCHEMY_DATABASE_URL : str = f"postgresql://{USERNAME}:{PASSWORD}@db:5432/{DATABASE}"
+    SQLALCHEMY_DATABASE_URL : str = f"postgresql://{USERNAME}:{PASSWORD}@{HOST}:5432/{DATABASE}"
     SECRET_KEY: str = "mysecretkey"
     REFRESH_SECRET_KEY: str = "mysecretkey1"
     ALGORITHM: str = "HS256"
