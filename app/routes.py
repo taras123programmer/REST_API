@@ -13,12 +13,12 @@ oauth2_scheme_not_required = OAuth2PasswordBearer(tokenUrl="/token", auto_error=
 
 @book_router.get('/{id}', response_model=BookSchema)
 async def get_book(id:int, request:Request, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme_not_required)):
-    #Токен не обов'язковий, але із токеном більший rate limit
-    if token:
-        username = verify_token(token)['username']
-        await rate_limit(request, username)
-    else:
-        await rate_limit(request, None)
+    # #Токен не обов'язковий, але із токеном більший rate limit
+    # if token:
+    #     username = verify_token(token)['username']
+    #     await rate_limit(request, username)
+    # else:
+    #     await rate_limit(request, None)
 
     book = db.query(Book).filter_by(id = id).first()
     if book:
@@ -30,11 +30,11 @@ async def get_book(id:int, request:Request, db: Session = Depends(get_db), token
 async def get_all_book(request:Request, db: Session = Depends(get_db),
                        token: str = Depends(oauth2_scheme_not_required), limit:int=None, cursor:int=None):
 
-    if token:
-        username = verify_token(token)['username']
-        await rate_limit(request, username)
-    else:
-        await rate_limit(request, None)
+    # if token:
+    #     username = verify_token(token)['username']
+    #     await rate_limit(request, username)
+    # else:
+    #     await rate_limit(request, None)
 
     if not limit:
         limit = 10
